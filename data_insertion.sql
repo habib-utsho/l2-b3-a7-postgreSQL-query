@@ -6,8 +6,16 @@ CREATE Table students (
     email VARCHAR(50) NOT NULL UNIQUE,
     frontend_mark INT NOT NULL,
     backend_mark INT NOT NULL,
-    status VARCHAR(20) CHECK (
-        status IN ('passed', 'failed', 'pending')
+    status VARCHAR(20)
+)
+
+ALTER Table students
+ADD CONSTRAINT students_status_check CHECK (
+    status IN (
+        'Awarded',
+        'Passed',
+        'Failed',
+        'Pending'
     )
 )
 
@@ -79,33 +87,36 @@ CREATE Table courses (
 
 INSERT INTO
     courses (course_name, credits)
-VALUES ('Next.js', 3),
-    ('React.js', 4),
-    ('Database', 3),
-    ('Prisma', 3)
+VALUES ('Docker', 3),
+    ('Redis', 4),
+    ('Kubernetes', 3),
+    ('Redux', 3)
 
 SELECT * FROM courses;
 
 CREATE Table enrollment (
     enrollment UUID PRIMARY KEY DEFAULT gen_random_uuid (),
     student_id UUID REFERENCES students ("student_id") NOT NULL,
-    course_id UUID REFERENCES courses ("course_id") NOT NULL
+    course_id UUID REFERENCES courses ("course_id") NOT NULL,
+    UNIQUE (student_id, course_id)
 )
 
 INSERT INTO
     enrollment (student_id, course_id)
 values (
+        'a51112f1-93cf-40eb-b8a4-6c9121df8e77',
+        '5f36e4d1-6f85-4b31-af9e-d4362629672a'
+    ),
+    (
         'a7e4e939-7922-43c3-9e98-a04b3d808803',
         '25ce8e2a-49b7-496d-a52f-f71a8990e017'
     ),
     (
-        'c35e7ede-9939-4d16-92dd-5d19c2565347',
-        '5f36e4d1-6f85-4b31-af9e-d4362629672a'
-    ),
-    (
-        'a51112f1-93cf-40eb-b8a4-6c9121df8e77',
+        '4f818953-2292-491f-bd84-8baa852ceb8a',
         '3cd59a24-3fd9-4b77-9aa3-48428048566b'
-    )
+    );
+
+DROP Table enrollment
 
 SELECT enrollment.*, students.student_name, age (now(), students.dob), students.email, courses.course_name, courses.credits
 FROM
